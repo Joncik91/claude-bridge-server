@@ -8,11 +8,13 @@ An MCP server that enables collaboration between [Claude Code](https://claude.ai
 
 ---
 
-## Why Combine Claude + GLM?
+## Why This Exists
 
-Running two Claude subscriptions for parallel work gets expensive. Z.ai's GLM offers similar coding capability at a fraction of the cost.
+You have a Claude subscription but you're hitting limits. Getting a second Claude subscription is pricey — but a Z.ai subscription costs less and GLM codes just as well as Sonnet.
 
-**The combo:** Use Claude (Opus) for planning and architecture. Use GLM for implementation. Same quality, lower cost.
+**The question:** How do you make Claude and GLM work together?
+
+**The answer:** Claude Bridge. An MCP server that coordinates both through a shared task queue.
 
 ```
 ┌─────────────────────────┐                    ┌─────────────────────────┐
