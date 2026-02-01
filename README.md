@@ -50,7 +50,7 @@ You have a Claude subscription but you're hitting limits. Getting a second Claud
 
 ```bash
 # 1. Clone and build
-git clone https://github.com/anthropics/claude-bridge-server.git
+git clone https://github.com/Joncik91/claude-bridge-server.git
 cd claude-bridge-server
 ./setup.sh          # or setup.bat on Windows
 

@@ -59,7 +59,7 @@ Running two Claude subscriptions for parallel work gets expensive. GLM offers si
 
 ```bash
 # Clone to a permanent location
-git clone https://github.com/anthropics/claude-bridge-server.git ~/.claude-bridge-server
+git clone https://github.com/Joncik91/claude-bridge-server.git ~/.claude-bridge-server
 cd ~/.claude-bridge-server
 
 # Build the server
@@ -72,27 +72,40 @@ Wait for "Setup complete!" before proceeding.
 
 ### Step 2: Configure Claude Code MCP
 
-Add to your Claude settings file:
+Add the bridge as a global MCP server (available in all projects):
 
-**File locations:**
-- Project-specific: `<your-project>/.claude/settings.json`
-- User-wide: `~/.claude/settings.json` (macOS/Linux) or `%USERPROFILE%\.claude\settings.json` (Windows)
-
-**Configuration:**
-```json
-{
-  "mcpServers": {
-    "claude-bridge": {
-      "command": "node",
-      "args": ["<FULL_PATH>/claude-bridge-server/server/dist/index.js"]
-    }
-  }
-}
+**macOS/Linux:**
+```bash
+claude mcp add --scope user --transport stdio claude-bridge -- node ~/.claude-bridge-server/server/dist/index.js
 ```
 
-Replace `<FULL_PATH>` with your actual path:
-- macOS/Linux: `/Users/yourname/.claude-bridge-server/server/dist/index.js`
-- Windows: `C:\\Users\\YourName\\.claude-bridge-server\\server\\dist\\index.js`
+**Windows:**
+```powershell
+claude mcp add --scope user --transport stdio claude-bridge -- node C:\Users\YourName\.claude-bridge-server\server\dist\index.js
+```
+
+Replace `YourName` with your Windows username.
+
+**Verify it's configured:**
+```bash
+claude mcp list
+```
+
+You should see `claude-bridge` listed.
+
+> **Alternative: Per-project setup**
+>
+> If you prefer project-specific configuration, create `.mcp.json` in your project root:
+> ```json
+> {
+>   "mcpServers": {
+>     "claude-bridge": {
+>       "command": "node",
+>       "args": ["/full/path/to/claude-bridge-server/server/dist/index.js"]
+>     }
+>   }
+> }
+> ```
 
 ### Step 3: Initialize Your Project
 
