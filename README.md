@@ -71,9 +71,15 @@ cd claude-bridge-server
 
 **[GUIDE.md](GUIDE.md)** — Complete setup, terminal configuration, usage, and troubleshooting
 
-## Works with Standard Claude Too
+## Works with Other MCP Clients Too
 
-While designed for Opus + GLM, the bridge works with any two Claude Code instances.
+While designed for Claude + GLM, the bridge is a standard MCP server — it works with any MCP-compatible CLI:
+
+- Two Claude Code instances (different subscriptions)
+- [Gemini CLI](https://github.com/google-gemini/gemini-cli)
+- [OpenCode](https://opencode.ai/)
+- [Qwen Code](https://github.com/QwenLM/qwen-code)
+- Any other MCP client
 
 ## License
 
