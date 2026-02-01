@@ -94,3 +94,7 @@ MIT — see [LICENSE](LICENSE)
 
 - Built for [Claude Code](https://claude.ai/code) by Anthropic
 - Designed for [Z.ai](https://z.ai) GLM integration
+
+<a href="https://glama.ai/mcp/servers/@Joncik91/claude-bridge-server">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@Joncik91/claude-bridge-server/badge" />
+</a>
