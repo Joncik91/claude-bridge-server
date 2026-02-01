@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build output
+server/dist/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (if any)
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional: lock files (uncomment if you don't want to commit these)
+# package-lock.json
+# yarn.lock
