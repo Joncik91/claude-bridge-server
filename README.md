@@ -8,13 +8,13 @@ An MCP server that enables collaboration between [Claude Code](https://claude.ai
 
 ---
 
-## The Problem
+## Why Combine Claude + GLM?
 
-Claude Code with Max 5x is powerful but has weekly token limits. Max 20x ($200/month) helps but gets expensive.
+Claude Opus excels at architectural reasoning and complex decisions. Z.ai's GLM excels at high-volume code implementation.
 
-Z.ai offers GLM models with generous limits at lower cost — but GLM lacks Opus's architectural reasoning.
+**Use both together:** Opus plans, GLM implements. Each model does what it's best at.
 
-**Solution: Use both.** Opus plans, GLM implements.
+This is more cost-effective than running two Claude subscriptions — and you get the best of both worlds.
 
 ```
 ┌─────────────────────────┐                    ┌─────────────────────────┐
@@ -63,7 +63,7 @@ cd claude-bridge-server
 ## Requirements
 
 - Node.js 18+
-- Claude Code CLI with Max subscription
+- Claude Code CLI
 - Z.ai account with GLM access
 - Two terminal windows
 

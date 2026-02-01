@@ -30,19 +30,19 @@ Complete documentation for setting up and using Claude Bridge to coordinate work
 
 Claude Bridge connects two Claude Code terminals through a shared task queue:
 
-- **Architect** (Claude Opus via Max subscription) — Plans features, designs architecture, reviews work
+- **Architect** (Claude Opus) — Plans features, designs architecture, reviews work
 - **Executor** (Z.ai GLM) — Implements code, runs research, executes tasks
 
 The bridge passes tasks between them, tracks state, and enables async communication — all without copy-pasting.
 
-### Why This Setup?
+### Why Combine Claude + GLM?
 
-| Role | Model | Tokens | Best For |
-|------|-------|--------|----------|
-| Architect | Claude Opus | Limited (Max 5x) | High-value decisions, planning |
-| Executor | Z.ai GLM | Abundant | Volume work, implementation |
+| Role | Model | Strength |
+|------|-------|----------|
+| Architect | Claude Opus | Complex reasoning, architecture, decisions |
+| Executor | Z.ai GLM | High-volume implementation, research |
 
-This gives you Opus-quality reasoning for architecture while GLM handles the bulk of coding.
+Each model does what it's best at. More cost-effective than two Claude subscriptions, and you get the strengths of both.
 
 ---
 
@@ -51,7 +51,7 @@ This gives you Opus-quality reasoning for architecture while GLM handles the bul
 ### Prerequisites
 
 - **Node.js 18+** — [Download](https://nodejs.org/)
-- **Claude Code CLI** — With active Max subscription
+- **Claude Code CLI** — [claude.ai/code](https://claude.ai/code)
 - **Z.ai account** — For GLM access ([z.ai](https://z.ai))
 - **Two terminal windows**
 
@@ -138,7 +138,7 @@ Add this complete configuration:
 # ============================================================
 
 function use-max {
-    # Resets to default Anthropic settings (Claude Max subscription)
+    # Resets to default Anthropic settings (your Claude subscription)
     [Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", $null, "Process")
     [Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", $null, "Process")
     [Environment]::SetEnvironmentVariable("ANTHROPIC_MODEL", $null, "Process")
@@ -199,7 +199,7 @@ Edit your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent):
 # ============================================================
 
 use-max() {
-    # Resets to default Anthropic settings (Claude Max subscription)
+    # Resets to default Anthropic settings (your Claude subscription)
     unset ANTHROPIC_BASE_URL
     unset ANTHROPIC_AUTH_TOKEN
     unset ANTHROPIC_MODEL
@@ -242,7 +242,7 @@ source ~/.bashrc  # or ~/.zshrc
 > claude
 ```
 
-Just run `claude`. Your profile defaults to Architect mode with your Max subscription.
+Just run `claude`. Your profile defaults to Architect mode.
 
 ### Terminal 2 (Executor - Z.ai GLM)
 
