@@ -28,13 +28,7 @@ Z.ai offers GLM models with generous limits at lower cost — but GLM lacks Opus
 └─────────────────────────┘                    └─────────────────────────┘
 ```
 
-## Cost Comparison
 
-| Setup | Monthly Cost | Opus Reasoning | Implementation Capacity |
-|-------|--------------|----------------|------------------------|
-| Max 5x alone | $20 | Yes | Limited by weekly cap |
-| Max 20x | $200 | Yes | 4x the cap |
-| **Max 5x + Z.ai GLM** | ~$130 | Yes | Effectively unlimited |
 
 ## Quick Example
 
