@@ -119,7 +119,7 @@ async function main() {
   const server = new Server(
     {
       name: `claude-bridge-${mode}`,
-      version: '1.1.0',
+      version: '0.1.1',
     },
     {
       capabilities: {
@@ -193,7 +193,7 @@ async function main() {
     : process.env.CLAUDE_BRIDGE_MODE
       ? 'env:CLAUDE_BRIDGE_MODE'
       : 'default';
-  console.error(`Claude Bridge MCP Server v1.1.0 started`);
+  console.error(`Claude Bridge MCP Server v0.1.1 started`);
   console.error(`  Mode: ${mode} (from ${modeSource})`);
   console.error(`  Project: ${projectPath}`);
   console.error(`  Database: ${dbPath}`);

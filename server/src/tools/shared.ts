@@ -10,6 +10,7 @@ const ListTasksSchema = z.object({
   ]).optional(),
   assigned_to: z.enum(['architect', 'executor']).optional(),
   limit: z.number().int().positive().max(100).optional(),
+  offset: z.number().int().nonnegative().optional(),
 });
 
 const GetTaskSchema = z.object({
@@ -19,6 +20,7 @@ const GetTaskSchema = z.object({
 const GetHistorySchema = z.object({
   since: z.string().optional(),
   limit: z.number().int().positive().max(100).optional(),
+  offset: z.number().int().nonnegative().optional(),
   category: z.enum(['feature', 'bugfix', 'refactor', 'research', 'test', 'docs']).optional(),
 });
 
@@ -46,6 +48,7 @@ const SaveContextSchema = z.object({
 const ListSessionsSchema = z.object({
   include_resumed: z.boolean().optional(),
   limit: z.number().int().positive().max(20).optional(),
+  offset: z.number().int().nonnegative().optional(),
 });
 
 export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
@@ -71,6 +74,10 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
             type: 'number',
             description: 'Maximum number of tasks to return (default: 50, max: 100)',
           },
+          offset: {
+            type: 'number',
+            description: 'Number of tasks to skip for pagination (default: 0)',
+          },
         },
       },
       handler: (params: unknown) => {
@@ -80,6 +87,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           status: validated.status as TaskStatus | TaskStatus[],
           assigned_to: validated.assigned_to as AgentRole,
           limit: validated.limit || 50,
+          offset: validated.offset || 0,
         });
 
         const counts = db.getTaskCountsByStatus();
@@ -135,6 +143,10 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
             type: 'number',
             description: 'Maximum number of tasks to return (default: 20, max: 100)',
           },
+          offset: {
+            type: 'number',
+            description: 'Number of tasks to skip for pagination (default: 0)',
+          },
           category: {
             type: 'string',
             enum: ['feature', 'bugfix', 'refactor', 'research', 'test', 'docs'],
@@ -148,6 +160,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
         const tasks = db.getTaskHistory({
           since: validated.since,
           limit: validated.limit || 20,
+          offset: validated.offset || 0,
           category: validated.category as Category,
         });
 
@@ -315,6 +328,10 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
             type: 'number',
             description: 'Maximum number of events to return (default: 50)',
           },
+          offset: {
+            type: 'number',
+            description: 'Number of events to skip for pagination (default: 0)',
+          },
         },
       },
       handler: (params: unknown) => {
@@ -322,6 +339,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           since: z.string().optional(),
           task_id: z.string().uuid().optional(),
           limit: z.number().int().positive().max(200).optional(),
+          offset: z.number().int().nonnegative().optional(),
         });
 
         const validated = schema.parse(params || {});
@@ -330,6 +348,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           since: validated.since,
           task_id: validated.task_id,
           limit: validated.limit || 50,
+          offset: validated.offset || 0,
         });
 
         return {
@@ -493,6 +512,10 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
             type: 'number',
             description: 'Maximum number of sessions to return (default: 10, max: 20)',
           },
+          offset: {
+            type: 'number',
+            description: 'Number of sessions to skip for pagination (default: 0)',
+          },
         },
       },
       handler: (params: unknown) => {
@@ -502,6 +525,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           agent: agentRole,
           include_resumed: validated.include_resumed,
           limit: validated.limit || 10,
+          offset: validated.offset || 0,
         });
 
         return {
