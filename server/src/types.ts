@@ -183,6 +183,7 @@ export interface ListTasksParams {
   status?: TaskStatus | TaskStatus[];
   assigned_to?: AgentRole;
   limit?: number;
+  offset?: number;
 }
 
 export interface GetTaskParams {
@@ -192,6 +193,7 @@ export interface GetTaskParams {
 export interface GetHistoryParams {
   since?: string;
   limit?: number;
+  offset?: number;
   category?: Category;
 }
 

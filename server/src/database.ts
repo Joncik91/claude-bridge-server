@@ -339,6 +339,7 @@ export class BridgeDatabase {
     status?: TaskStatus | TaskStatus[];
     assigned_to?: AgentRole;
     limit?: number;
+    offset?: number;
   } = {}): Task[] {
     let query = `SELECT * FROM tasks WHERE 1=1`;
     const queryParams: unknown[] = [];
@@ -370,6 +371,11 @@ export class BridgeDatabase {
     if (params.limit) {
       query += ` LIMIT ?`;
       queryParams.push(params.limit);
+    }
+
+    if (params.offset) {
+      query += ` OFFSET ?`;
+      queryParams.push(params.offset);
     }
 
     const stmt = this.db.prepare(query);
@@ -454,6 +460,7 @@ export class BridgeDatabase {
   getTaskHistory(params: {
     since?: string;
     limit?: number;
+    offset?: number;
     category?: Category;
   } = {}): Task[] {
     let query = `SELECT * FROM tasks WHERE status IN ('completed', 'failed', 'cancelled')`;
@@ -474,6 +481,11 @@ export class BridgeDatabase {
     if (params.limit) {
       query += ` LIMIT ?`;
       queryParams.push(params.limit);
+    }
+
+    if (params.offset) {
+      query += ` OFFSET ?`;
+      queryParams.push(params.offset);
     }
 
     const stmt = this.db.prepare(query);
@@ -574,6 +586,7 @@ export class BridgeDatabase {
     agent?: AgentRole;
     include_resumed?: boolean;
     limit?: number;
+    offset?: number;
   } = {}): SessionContext[] {
     let query = `SELECT * FROM sessions WHERE project_path = ?`;
     const queryParams: unknown[] = [this.projectPath];
@@ -592,6 +605,11 @@ export class BridgeDatabase {
     if (params.limit) {
       query += ` LIMIT ?`;
       queryParams.push(params.limit);
+    }
+
+    if (params.offset) {
+      query += ` OFFSET ?`;
+      queryParams.push(params.offset);
     }
 
     const stmt = this.db.prepare(query);
@@ -743,6 +761,7 @@ export class BridgeDatabase {
     since?: string;
     task_id?: string;
     limit?: number;
+    offset?: number;
   } = {}): EventLogEntry[] {
     let query = `SELECT * FROM event_log WHERE 1=1`;
     const queryParams: unknown[] = [];
@@ -762,6 +781,11 @@ export class BridgeDatabase {
     if (params.limit) {
       query += ` LIMIT ?`;
       queryParams.push(params.limit);
+    }
+
+    if (params.offset) {
+      query += ` OFFSET ?`;
+      queryParams.push(params.offset);
     }
 
     const stmt = this.db.prepare(query);
