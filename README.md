@@ -2,6 +2,11 @@
 
 An MCP server that enables collaboration between [Claude Code](https://claude.ai/code) and [Z.ai's GLM models](https://z.ai) — use Claude Opus for planning while GLM handles implementation.
 
+Combine the strengths of Claude Code and Z.ai's GLM in one workflow. This MCP server lets Opus
+handle high-level planning while GLM tackles implementation — coordinated through a shared task
+queue, running simultaneously in separate terminals. Run Claude Code with your Max
+subscription or API for architecture, and Claude Code with Z.ai (GLM) for execution — both working together at the same time.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
