@@ -36,17 +36,7 @@ Claude Bridge connects two Claude Code terminals through a shared task queue:
 └─────────────────────────┘                    └─────────────────────────┘
 ```
 
-**The result:** Opus-quality planning with GLM-volume implementation, at a fraction of the cost of Max 20.
-
-## Cost Comparison
-
-| Setup | Monthly Cost | Opus Reasoning | Implementation Capacity |
-|-------|--------------|----------------|------------------------|
-| Max 5 alone | $20 | Yes | Limited by weekly cap |
-| Max 20 | $200 | Yes | 4x the cap |
-| **Max 5 + Z.ai GLM** | ~$130 | Yes | Effectively unlimited |
-
-With Claude Bridge, you get the best of both worlds.
+**The result:** Opus-quality planning with GLM-volume implementation, at a fraction of the cost of Max 20. With Claude Bridge, you get the best of both worlds.
 
 ## How It Works
 
