@@ -37,12 +37,12 @@ The bridge passes tasks between them, tracks state, and enables async communicat
 
 ### Why Combine Claude + GLM?
 
-| Role | Model | Strength |
-|------|-------|----------|
-| Architect | Claude Opus | Complex reasoning, architecture, decisions |
-| Executor | Z.ai GLM | High-volume implementation, research |
+| Role | Model | Why |
+|------|-------|-----|
+| Architect | Claude Opus | Your existing Claude subscription |
+| Executor | Z.ai GLM | Similar capability, fraction of the cost |
 
-Each model does what it's best at. More cost-effective than two Claude subscriptions, and you get the strengths of both.
+Running two Claude subscriptions for parallel work gets expensive. GLM offers similar coding capability at lower cost — so you get parallel agents without paying double.
 
 ---
 
@@ -111,7 +111,10 @@ This creates a `.claude-bridge/` folder with the project database.
 
 ## Terminal Profile Setup
 
-This is the critical step. You need functions to switch between Claude Max (Opus) and Z.ai GLM.
+This is the critical step. You need to configure your shell so you can run both Claude and GLM terminals simultaneously.
+
+- **Terminal 1:** Just run `claude` — uses your normal Claude subscription
+- **Terminal 2:** Run `use-glm` first, then run `claude` — uses Z.ai API
 
 ### Windows PowerShell
 
@@ -124,17 +127,15 @@ Add this complete configuration:
 
 ```powershell
 # ============================================================
-# CLAUDE CODE SWITCHER
+# CLAUDE CODE - DUAL TERMINAL SETUP
 # ============================================================
-# These functions configure environment variables BEFORE you
-# start Claude Code. Run the function first, then run `claude`.
+# Run both Claude and GLM terminals simultaneously:
 #
-# Workflow:
-#   Terminal 1: Just run `claude` (uses Max by default)
-#   Terminal 2: Run `use-glm`, then run `claude` (uses GLM)
+#   Terminal 1: Just run `claude` (uses your Claude subscription)
+#   Terminal 2: Run `use-glm`, then `claude` (uses Z.ai API)
 #
-# To switch models: exit Claude, run use-max or use-glm,
-# then start Claude again.
+# The `use-glm` function configures environment variables
+# before starting Claude Code. Always start with `claude`.
 # ============================================================
 
 function use-max {
@@ -185,17 +186,15 @@ Edit your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent):
 
 ```bash
 # ============================================================
-# CLAUDE CODE SWITCHER
+# CLAUDE CODE - DUAL TERMINAL SETUP
 # ============================================================
-# These functions configure environment variables BEFORE you
-# start Claude Code. Run the function first, then run `claude`.
+# Run both Claude and GLM terminals simultaneously:
 #
-# Workflow:
-#   Terminal 1: Just run `claude` (uses Max by default)
-#   Terminal 2: Run `use-glm`, then run `claude` (uses GLM)
+#   Terminal 1: Just run `claude` (uses your Claude subscription)
+#   Terminal 2: Run `use-glm`, then `claude` (uses Z.ai API)
 #
-# To switch models: exit Claude, run use-max or use-glm,
-# then start Claude again.
+# The `use-glm` function configures environment variables
+# before starting Claude Code. Always start with `claude`.
 # ============================================================
 
 use-max() {
@@ -263,13 +262,15 @@ In both terminals:
 
 You should see `claude-bridge` listed.
 
-### Switching Models
+### Repurposing a Terminal (Optional)
 
-To switch a terminal from GLM back to Max (or vice versa):
+If you need to change a terminal from GLM to Claude (or vice versa):
 
-1. Exit Claude (type `exit` or Ctrl+C)
+1. Exit Claude (`exit` or Ctrl+C)
 2. Run `use-max` or `use-glm`
-3. Run `claude` again
+3. Run `claude`
+
+Most of the time you'll just keep both terminals running as-is.
 
 ---
 

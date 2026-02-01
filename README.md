@@ -10,11 +10,9 @@ An MCP server that enables collaboration between [Claude Code](https://claude.ai
 
 ## Why Combine Claude + GLM?
 
-Claude Opus excels at architectural reasoning and complex decisions. Z.ai's GLM excels at high-volume code implementation.
+Running two Claude subscriptions for parallel work gets expensive. Z.ai's GLM offers similar coding capability at a fraction of the cost.
 
-**Use both together:** Opus plans, GLM implements. Each model does what it's best at.
-
-This is more cost-effective than running two Claude subscriptions — and you get the best of both worlds.
+**The combo:** Use Claude (Opus) for planning and architecture. Use GLM for implementation. Same quality, lower cost.
 
 ```
 ┌─────────────────────────┐                    ┌─────────────────────────┐
