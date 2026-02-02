@@ -73,7 +73,9 @@ If you're using a **planning framework** like [Get-Shit-Done (GSD)](https://gith
 
 ### Terminal Profile Setup
 
-To run Claude Max and Z.ai GLM simultaneously, add these functions to your shell profile:
+**Same subscription in both terminals?** Just run `claude` in each — no profile setup needed.
+
+**Claude + Z.ai GLM?** Add this function to your shell profile:
 
 **Windows PowerShell** (`notepad $PROFILE`):
 ```powershell
