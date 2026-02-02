@@ -540,5 +540,130 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
         };
       },
     },
+
+    // ==================== TASK CONTEXT RECOVERY ====================
+
+    bridge_load_task_context: {
+      description: 'Load context from a specific task and its dependencies. Use this to recover context after a context reset or compaction by providing the task ID you were working on.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          task_id: {
+            type: 'string',
+            description: 'UUID of the task to load context from',
+          },
+          include_dependencies: {
+            type: 'boolean',
+            description: 'Include context from tasks this task depends on (default: true)',
+          },
+          include_dependents: {
+            type: 'boolean',
+            description: 'Include context from tasks that depend on this task (default: false)',
+          },
+        },
+        required: ['task_id'],
+      },
+      handler: (params: unknown) => {
+        const schema = z.object({
+          task_id: z.string().uuid(),
+          include_dependencies: z.boolean().optional(),
+          include_dependents: z.boolean().optional(),
+        });
+        const validated = schema.parse(params);
+        const includeDeps = validated.include_dependencies !== false; // default true
+        const includeDependents = validated.include_dependents === true; // default false
+
+        // Get the main task
+        const task = db.getTask(validated.task_id);
+        if (!task) {
+          throw new Error(`Task not found: ${validated.task_id}`);
+        }
+
+        // Helper to format task context
+        const formatTaskContext = (t: typeof task) => ({
+          id: t.id,
+          title: t.title,
+          status: t.status,
+          category: t.category,
+          instructions: t.instructions,
+          acceptance_criteria: t.acceptance_criteria,
+          context_files: t.context_files,
+          context_summary: t.context_summary,
+          created_at: t.created_at,
+          completed_at: t.completed_at,
+          result: t.result ? {
+            success: t.result.success,
+            summary: t.result.summary,
+            files_modified: t.result.files_modified,
+            files_created: t.result.files_created,
+            files_deleted: t.result.files_deleted,
+            follow_up_tasks: t.result.follow_up_tasks,
+          } : null,
+        });
+
+        // Get dependency tasks
+        const dependencies: ReturnType<typeof formatTaskContext>[] = [];
+        if (includeDeps && task.depends_on.length > 0) {
+          for (const depId of task.depends_on) {
+            const depTask = db.getTask(depId);
+            if (depTask) {
+              dependencies.push(formatTaskContext(depTask));
+            }
+          }
+        }
+
+        // Get dependent tasks (tasks that depend on this one)
+        const dependents: ReturnType<typeof formatTaskContext>[] = [];
+        if (includeDependents) {
+          // Find tasks where depends_on includes this task's ID
+          const allTasks = db.listTasks({ limit: 100, offset: 0 });
+          for (const t of allTasks) {
+            if (t.depends_on.includes(task.id)) {
+              dependents.push(formatTaskContext(t));
+            }
+          }
+        }
+
+        // Collect all files touched across the task chain
+        const allFilesTouched = new Set<string>();
+        const addFiles = (t: typeof task) => {
+          t.context_files.forEach(f => allFilesTouched.add(f));
+          if (t.result) {
+            t.result.files_modified.forEach(f => allFilesTouched.add(f));
+            t.result.files_created.forEach(f => allFilesTouched.add(f));
+          }
+        };
+        addFiles(task);
+        dependencies.forEach(d => {
+          const fullTask = db.getTask(d.id);
+          if (fullTask) addFiles(fullTask);
+        });
+
+        // Log the context load event
+        db.logEvent({
+          agent: agentRole,
+          event_type: 'task_context_loaded',
+          task_id: task.id,
+          payload: {
+            dependencies_loaded: dependencies.length,
+            dependents_loaded: dependents.length,
+          },
+        });
+
+        return {
+          task: formatTaskContext(task),
+          dependencies,
+          dependents,
+          all_files_touched: Array.from(allFilesTouched).sort(),
+          summary: {
+            task_status: task.status,
+            has_result: !!task.result,
+            dependency_count: dependencies.length,
+            dependent_count: dependents.length,
+            total_files: allFilesTouched.size,
+          },
+        };
+      },
+    },
   };
 }
