@@ -51,6 +51,19 @@ You have a Claude subscription but you're hitting limits. Getting a second Claud
 - **Clarifications** — Executor asks questions, Architect responds
 - **Token-Conscious** — Designed to minimize Opus usage
 
+## When NOT to Use This
+
+If you're using a **planning framework** like [Get-Shit-Done (GSD)](https://github.com/cyanheads/get-shit-done), you don't need this bridge. Frameworks like GSD store context in project files (`.planning/`) that both terminals can read directly. Slash commands like `/gsd:plan-phase` and `/gsd:execute-phase` work in any terminal.
+
+**Use Claude Bridge for:**
+- Ad-hoc tasks, quick fixes, one-off research
+- Projects without a planning framework
+- Session continuity across restarts
+
+**Skip the bridge if:**
+- Using GSD or similar file-based planning frameworks
+- Both terminals share the project filesystem
+
 ## Quick Start
 
 ```bash
