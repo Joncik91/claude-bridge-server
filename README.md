@@ -15,7 +15,7 @@ subscription or API for architecture, and Claude Code with Z.ai (GLM) for execut
 
 ## Why This Exists
 
-You have a Claude subscription but you're hitting limits. Getting a second Claude subscription is pricey — but a Z.ai subscription costs less and GLM codes just as well as Sonnet.
+You have a Claude subscription but you're hitting limits. Getting a second Claude subscription is pricey (or upgrading might be too expensive) — but a Z.ai subscription costs less and GLM codes just as well as Sonnet.
 
 **The question:** How do you make Claude and GLM work together?
 
