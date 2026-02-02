@@ -64,6 +64,41 @@ If you're using a **planning framework** like [Get-Shit-Done (GSD)](https://gith
 - Using GSD or similar file-based planning frameworks
 - Both terminals share the project filesystem
 
+## Prerequisites
+
+- **Node.js 18+** — [Download](https://nodejs.org/)
+- **Claude Code CLI** — [Installation](https://docs.anthropic.com/en/docs/claude-code)
+- **Z.ai account** — For GLM access ([z.ai](https://z.ai))
+- **Two terminal windows**
+
+### Terminal Profile Setup
+
+To run Claude Max and Z.ai GLM simultaneously, add these functions to your shell profile:
+
+**Windows PowerShell** (`notepad $PROFILE`):
+```powershell
+function use-glm {
+    $env:ANTHROPIC_BASE_URL = "https://api.z.ai/api/anthropic"
+    $env:ANTHROPIC_AUTH_TOKEN = "your_zai_api_key_here"
+    Write-Host ">>> GLM ACTIVE (Executor mode)" -ForegroundColor Cyan
+}
+```
+
+**macOS/Linux** (`~/.bashrc` or `~/.zshrc`):
+```bash
+use-glm() {
+    export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
+    export ANTHROPIC_AUTH_TOKEN="your_zai_api_key_here"
+    echo ">>> GLM ACTIVE (Executor mode)"
+}
+```
+
+**Usage:**
+- Terminal 1: Just run `claude` (uses your Claude subscription)
+- Terminal 2: Run `use-glm`, then `claude` (uses Z.ai API)
+
+See [GUIDE.md](GUIDE.md#terminal-profile-setup) for full setup including `use-max` function.
+
 ## Quick Start
 
 ```bash
@@ -72,18 +107,9 @@ git clone https://github.com/Joncik91/claude-bridge-server.git
 cd claude-bridge-server
 ./setup.sh          # or setup.bat on Windows
 
-# 2. See GUIDE.md for:
-#    - Claude Code MCP configuration
-#    - Terminal profile setup (use-max / use-glm functions)
-#    - Project initialization
+# 2. Configure MCP (see GUIDE.md for details)
+claude mcp add --scope user --transport stdio claude-bridge -- node /path/to/server/dist/index.js
 ```
-
-## Requirements
-
-- Node.js 18+
-- Claude Code CLI
-- Z.ai account with GLM access
-- Two terminal windows
 
 ## Documentation
 
