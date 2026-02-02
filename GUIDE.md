@@ -44,6 +44,31 @@ The bridge passes tasks between them, tracks state, and enables async communicat
 
 Running two Claude subscriptions for parallel work gets expensive. GLM offers similar coding capability at lower cost — so you get parallel agents without paying double.
 
+### When to Use the Bridge
+
+The bridge is useful for **ad-hoc coordination** between terminals. However, if you're using a **planning framework** like [Get-Shit-Done (GSD)](https://github.com/cyanheads/get-shit-done), the bridge becomes unnecessary.
+
+**Why?** Frameworks like GSD store context in project files (`.planning/`) that both terminals can read:
+
+| GSD Approach | Bridge Approach |
+|--------------|-----------------|
+| Context lives in `.planning/` files | Context lives in bridge queue |
+| Both terminals read/write same files | Tasks passed through MCP server |
+| `/gsd:plan-phase` in Opus terminal | `bridge_push_task` from Opus |
+| `/gsd:execute-phase` in GLM terminal | `bridge_pull_task` from GLM |
+| Files ARE the shared state | Queue IS the shared state |
+
+**Use the bridge for:**
+- Ad-hoc tasks, quick fixes, one-off requests
+- Research tasks without structured planning
+- Session continuity (`save_context` / `load_context`)
+- Projects without a planning framework
+
+**Skip the bridge if:**
+- Using GSD or similar file-based frameworks
+- Structured planning with phases and roadmaps
+- Both terminals share the project filesystem
+
 ---
 
 ## Installation
@@ -393,12 +418,15 @@ Opus tokens are expensive. GLM tokens are cheap. Design your workflow accordingl
 context_files: ["src/api/client.ts", "src/utils/retry.ts"]
 ```
 
-### 2. Push Research to Executor
+### 2. Push Research to Executor (With File Output)
 
-Instead of Opus exploring the codebase:
-> "Push a research task to analyze how error handling works in src/api/"
+Instead of Opus exploring the codebase, push a research task with a file output location:
 
-GLM explores (cheap), reports findings. Opus makes decisions (valuable).
+> "Push a research task to analyze error handling in src/api/. Write findings to docs/research/error-handling.md"
+
+GLM explores (cheap), writes detailed findings to file. Opus reads the file (cheap), makes decisions (valuable).
+
+**Why file output?** Task completion summaries are brief. Detailed findings with code references, tables, and analysis belong in files that both terminals can access.
 
 ### 3. Batch Tasks
 
@@ -471,6 +499,39 @@ Next session: "What's the project state?" — immediately know where you left of
 ### 5. Check In Periodically
 
 Review completed tasks to course-correct early.
+
+### 6. Research Tasks: Write Findings to Files
+
+The bridge passes task status, not content. For research tasks, instruct the Executor to write detailed findings to a file.
+
+**Less useful:**
+```
+Task completed with summary: "Found 3 issues with auth"
+```
+Architect only sees a brief summary. Details are lost.
+
+**More useful:**
+```
+Task instructions: "Analyze auth flow. Write findings to docs/research/auth-analysis.md"
+```
+Executor writes detailed findings to file. Architect reads the file directly.
+
+**Why this matters:**
+- Task summaries are meant for status, not detailed content
+- Research findings need code references, tables, specific values
+- Both terminals see the filesystem — use it for sharing content
+
+### 7. Use the Filesystem for Shared Content
+
+Both terminals see the same files. Use this for complex work:
+
+| Use | For |
+|-----|-----|
+| Bridge tasks | Coordinating work, tracking status |
+| Files | Detailed findings, plans, analysis |
+| Decisions | Recording architectural choices |
+
+The bridge coordinates work. Files carry content.
 
 ---
 
@@ -558,9 +619,23 @@ Both agents see logged decisions — no re-explaining.
 ### Research Task
 
 ```
-1. Architect: "Push a research task to analyze error handling"
-2. Executor: explores, documents findings, completes
-3. Architect: sees output, makes decisions
+1. Architect: "Push a research task to analyze the database schema.
+              Write findings to docs/research/schema-analysis.md"
+2. Executor: explores codebase → writes findings to file → completes task
+3. Architect: reads docs/research/schema-analysis.md
+4. Architect: makes decisions, may push implementation tasks
+```
+
+### Research → Decision → Implementation
+
+For complex work requiring exploration before coding:
+
+```
+1. Architect: pushes research task with file output location
+2. Executor: writes detailed findings to file, completes task
+3. Architect: reads findings, logs key decisions
+4. Architect: pushes implementation tasks (sequential if dependent)
+5. Executor: pulls and completes tasks one by one
 ```
 
 ### Bug Investigation
