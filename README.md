@@ -97,7 +97,7 @@ use-glm() {
 - Terminal 1: Just run `claude` (uses your Claude subscription)
 - Terminal 2: Run `use-glm`, then `claude` (uses Z.ai API)
 
-See [GUIDE.md](GUIDE.md#terminal-profile-setup) for full setup including `use-max` function.
+See [GUIDE.md](GUIDE.md#terminal-profile-setup) for complete setup details.
 
 ## Quick Start
 

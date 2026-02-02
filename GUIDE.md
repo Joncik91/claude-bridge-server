@@ -177,7 +177,7 @@ Add this complete configuration:
 # ============================================================
 
 function use-max {
-    # Resets to default Anthropic settings (your Claude subscription)
+    # Optional: Only needed if you want to switch a GLM terminal back to Claude Max
     [Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", $null, "Process")
     [Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", $null, "Process")
     [Environment]::SetEnvironmentVariable("ANTHROPIC_MODEL", $null, "Process")
@@ -236,7 +236,7 @@ Edit your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent):
 # ============================================================
 
 use-max() {
-    # Resets to default Anthropic settings (your Claude subscription)
+    # Optional: Only needed if you want to switch a GLM terminal back to Claude Max
     unset ANTHROPIC_BASE_URL
     unset ANTHROPIC_AUTH_TOKEN
     unset ANTHROPIC_MODEL
