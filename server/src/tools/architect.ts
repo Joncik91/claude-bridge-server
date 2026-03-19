@@ -46,7 +46,7 @@ const RespondClarificationSchema = z.object({
 export function createArchitectTools(db: BridgeDatabase) {
   return {
     bridge_push_task: {
-      description: 'Push a new task to the queue for execution. Use this to delegate work to the Executor agent.',
+      description: 'Push a new task to the queue for execution. Use this to delegate work to the Executor agent. Returns { task_id: string (UUID), queue_position: number, status: "queued" }. NOT idempotent: calling twice with identical parameters creates two separate tasks. On error: throws if any depends_on task ID does not exist. Recovery: use bridge_list_tasks to verify dependency IDs before pushing.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -70,7 +70,7 @@ export function createArchitectTools(db: BridgeDatabase) {
           context_files: {
             type: 'array',
             items: { type: 'string' },
-            description: 'File paths the Executor should read before starting',
+            description: 'Relative file paths the Executor should read before starting (e.g. "src/index.ts"). No max limit. Paths are not validated — non-existent paths are stored as-is.',
           },
           context_summary: {
             type: 'string',
@@ -79,7 +79,7 @@ export function createArchitectTools(db: BridgeDatabase) {
           depends_on: {
             type: 'array',
             items: { type: 'string' },
-            description: 'Task IDs that must complete before this task can start',
+            description: 'UUIDs of tasks that must complete before this task can start. Each ID must reference an existing task or the call will fail. Use bridge_list_tasks to discover valid task IDs.',
           },
           assign_to: {
             type: 'string',
@@ -133,7 +133,7 @@ export function createArchitectTools(db: BridgeDatabase) {
     },
 
     bridge_push_tasks: {
-      description: 'Push multiple related tasks at once. Optionally set them to run sequentially (with dependencies) or in parallel.',
+      description: 'Push multiple related tasks at once (max 20). Optionally set them to run sequentially (auto-creates dependency chain) or in parallel. Returns { task_ids: string[], count: number, dependencies_created: boolean }. NOT idempotent: calling twice creates duplicate tasks.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -207,7 +207,7 @@ export function createArchitectTools(db: BridgeDatabase) {
     },
 
     bridge_update_task: {
-      description: 'Update an existing task. Can modify title, instructions, priority, or reassign.',
+      description: 'Update an existing task. Can modify title, instructions, priority, or reassign. Returns { success: boolean, task_id: string }. Cannot update tasks in terminal states (completed, failed, cancelled). On error: throws if task_id not found or task is in a terminal state. Recovery: use bridge_get_task to check current status before updating. Idempotent: calling with same values is safe.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -257,7 +257,7 @@ export function createArchitectTools(db: BridgeDatabase) {
     },
 
     bridge_cancel_task: {
-      description: 'Cancel a queued or blocked task. Cannot cancel tasks that are in progress.',
+      description: 'Cancel a queued or blocked task. Cannot cancel tasks that are in progress. WARNING: This is irreversible — cancelled tasks cannot be restored. Verify the task_id with bridge_get_task before cancelling. Returns { success: boolean, task_id: string }. On error: throws if task_id not found or task status is not queued/blocked.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -297,7 +297,7 @@ export function createArchitectTools(db: BridgeDatabase) {
     },
 
     bridge_respond_clarification: {
-      description: 'Respond to a clarification request from the Executor. This unblocks the associated task.',
+      description: 'Respond to a clarification request from the Executor. This unblocks the associated task. Returns { success: boolean, clarification_id: string }. On error: throws if clarification_id not found. Recovery: use bridge_get_clarifications to find pending clarification IDs.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -325,7 +325,7 @@ export function createArchitectTools(db: BridgeDatabase) {
     },
 
     bridge_get_clarifications: {
-      description: 'Get all pending clarification requests that need a response.',
+      description: 'Get all pending clarification requests that need a response. Returns { count: number, clarifications: [{ id, task_id, question, options, created_at }] }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {},

@@ -54,7 +54,7 @@ const ListSessionsSchema = z.object({
 export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
   return {
     bridge_list_tasks: {
-      description: 'List tasks in the queue with optional filters by status and assignment.',
+      description: 'List tasks in the queue with optional filters by status and assignment. Returns { tasks: [{ id, title, priority, category, status, assigned_to, created_at, depends_on_count }], total: number, counts_by_status: { queued, claimed, in_progress, blocked, completed, failed, cancelled } }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -110,11 +110,11 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_get_task: {
-      description: 'Get full details of a specific task by ID.',
+      description: 'Get full details of a specific task by ID. Returns { task: { id, title, priority, category, status, instructions, acceptance_criteria, context_files, context_summary, depends_on, assigned_to, created_by, created_at, claimed_at, started_at, completed_at, result } }. On error: throws if task_id is not a valid UUID or task does not exist. Recovery: use bridge_list_tasks to discover valid task IDs. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {
-          task_id: { type: 'string', description: 'UUID of the task' },
+          task_id: { type: 'string', description: 'UUID of the task. Must be a valid UUID v4. Use bridge_list_tasks to discover valid task IDs.' },
         },
         required: ['task_id'],
       },
@@ -131,7 +131,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_get_history: {
-      description: 'Get completed/failed/cancelled tasks. Useful for reviewing past work.',
+      description: 'Get completed/failed/cancelled tasks. Useful for reviewing past work. Returns { tasks: [{ id, title, category, status, created_at, completed_at, result: { success, summary, files_modified: count, files_created: count } | null }], total: number }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -187,7 +187,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_get_state: {
-      description: 'Get the shared project state including current focus, recent decisions, and known issues.',
+      description: 'Get the shared project state including current focus, recent decisions, and known issues. Returns { state: { current_focus, known_issues, last_sync, recent_decisions (last 10) }, queue_summary: { queued, in_progress, blocked, completed_total } }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -214,7 +214,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_update_state: {
-      description: 'Update the shared project state. Use to set current focus or track known issues.',
+      description: 'Update the shared project state. Use to set current focus or track known issues. Returns { success: boolean, message?: string }. Side effect: logs a state_updated event. Idempotent: calling with the same values is safe. At least one field must be provided.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -251,7 +251,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_log_decision: {
-      description: 'Log an architectural or design decision for shared memory. Both agents should use this to record important choices.',
+      description: 'Log an architectural or design decision for shared memory. Both agents should use this to record important choices. Returns { decision_id: string, logged_at: string (ISO timestamp) }. NOT idempotent: calling twice creates two separate decision records.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -260,7 +260,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           affects_files: {
             type: 'array',
             items: { type: 'string' },
-            description: 'Files affected by this decision',
+            description: 'Relative file paths affected by this decision (e.g. "src/index.ts"). No validation is performed on paths.',
           },
         },
         required: ['summary', 'rationale'],
@@ -289,7 +289,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_sync: {
-      description: 'Mark a sync point. Use after reviewing shared state to acknowledge you are up-to-date.',
+      description: 'Mark a sync point. Use after reviewing shared state to acknowledge you are up-to-date. Returns { synced_at: string (ISO timestamp), agent: string }. Idempotent: safe to call multiple times.',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -312,7 +312,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_get_events: {
-      description: 'Get recent events from the audit log. Useful for seeing what the other agent has been doing.',
+      description: 'Get recent events from the audit log. Useful for seeing what the other agent has been doing. Returns { events: [{ id, timestamp, agent, event_type, task_id, payload }], total: number }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -368,7 +368,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     // ==================== SESSION CONTEXT TOOLS ====================
 
     bridge_save_context: {
-      description: 'Save your current working context before closing the session. Use this when you need to pause work and want to remember where you left off.',
+      description: 'Save your current working context before closing the session. Use this when you need to pause work and want to remember where you left off. Returns { session_id: string (UUID), saved_at: string (ISO timestamp), message: string }. NOT idempotent: calling twice creates two separate session records. Load with bridge_load_context.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -396,7 +396,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
           files_in_focus: {
             type: 'array',
             items: { type: 'string' },
-            description: 'Files you were working with',
+            description: 'Relative file paths you were working with (e.g. "src/index.ts"). No validation is performed on paths.',
           },
           important_notes: {
             type: 'string',
@@ -435,7 +435,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_load_context: {
-      description: 'Load your previous working context when starting a new session. Shows what you were doing and where you left off.',
+      description: 'Load your previous working context when starting a new session. Shows what you were doing and where you left off. Returns { found: boolean, session?: { id, saved_at, current_task: { id, title } | null, working_on, progress_made, next_steps, open_questions, files_in_focus, important_notes } } or { found: false, message } if no session exists. Side effect: marks the loaded session as resumed. On error: throws if session_id is invalid UUID or not found.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -500,7 +500,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     },
 
     bridge_list_sessions: {
-      description: 'List saved session contexts. Useful for seeing your work history across sessions.',
+      description: 'List saved session contexts. Useful for seeing your work history across sessions. Returns { sessions: [{ id, saved_at, resumed_at, task_title, working_on (truncated to 100 chars) }], total: number }. Safe to call repeatedly (read-only).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -544,7 +544,7 @@ export function createSharedTools(db: BridgeDatabase, agentRole: AgentRole) {
     // ==================== TASK CONTEXT RECOVERY ====================
 
     bridge_load_task_context: {
-      description: 'Load context from a specific task and its dependencies. Use this to recover context after a context reset or compaction by providing the task ID you were working on.',
+      description: 'Load context from a specific task and its dependencies. Use this to recover context after a context reset or compaction by providing the task ID you were working on. Returns { task: { id, title, status, category, instructions, acceptance_criteria, context_files, context_summary, created_at, completed_at, result }, dependencies: [...tasks], dependents: [...tasks], all_files_touched: string[], summary: { task_status, has_result, dependency_count, dependent_count, total_files } }. On error: throws if task_id not found. Recovery: use bridge_list_tasks to find valid task IDs.',
       inputSchema: {
         type: 'object',
         properties: {
