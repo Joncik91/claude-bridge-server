@@ -1,15 +1,37 @@
+<div align="center">
+
+<img src="docs/logo.svg" alt="Claude Bridge" width="160" height="160">
+
 # Claude Bridge
 
-An MCP server that enables collaboration between [Claude Code](https://claude.ai/code) and [Z.ai's GLM models](https://z.ai) — use Claude Opus for planning while GLM handles implementation.
+[![License: MIT](https://img.shields.io/badge/license-MIT-E8954A.svg)](LICENSE)
+[![Node.js 18+](https://img.shields.io/badge/node-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![MCP](https://img.shields.io/badge/protocol-MCP-E8954A)](https://modelcontextprotocol.io/)
+[![GitHub stars](https://img.shields.io/github/stars/Joncik91/claude-bridge-server?color=E8954A&logo=github)](https://github.com/Joncik91/claude-bridge-server/stargazers)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-E8954A.svg)](CONTRIBUTING.md)
+
+**An MCP server that enables collaboration between [Claude Code](https://claude.ai/code) and [Z.ai's GLM models](https://z.ai) — use Claude Opus for planning while GLM handles implementation.**
 
 Combine the strengths of Claude Code and Z.ai's GLM in one workflow. This MCP server lets Opus
 handle high-level planning while GLM tackles implementation — coordinated through a shared task
 queue, running simultaneously in separate terminals. Run Claude Code with your Max
 subscription or API for architecture, and Claude Code with Z.ai (GLM) for execution — both working together at the same time.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+</div>
+
+## Table of Contents
+
+- [Why This Exists](#why-this-exists)
+- [Quick Example](#quick-example)
+- [Features](#features)
+- [When NOT to Use This](#when-not-to-use-this)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Works with Other MCP Clients Too](#works-with-other-mcp-clients-too)
+- [Security](#security)
+- [License](#license)
 
 ---
 
@@ -127,9 +149,35 @@ While designed for Claude + GLM, the bridge is a standard MCP server — it work
 - [Qwen Code](https://github.com/QwenLM/qwen-code)
 - Any other MCP client
 
+## Security
+
+Claude Bridge sits between two CLIs that hold real API tokens. Three
+implications worth being explicit about.
+
+- **API tokens never pass through the bridge.** The server's
+  protocol carries tasks, statuses, and results — not credentials.
+  Each terminal authenticates against its own provider directly
+  (your Claude subscription on one side, your Z.ai key on the other).
+  The shell-profile pattern in [Prerequisites](#prerequisites) is
+  there so the *terminal session* sets `ANTHROPIC_AUTH_TOKEN` —
+  the bridge never reads it.
+- **Don't commit `use-glm` with a literal key.** The shell-profile
+  snippets in this README and `GUIDE.md` use a placeholder — replace
+  it with `${ZAI_API_KEY}` or similar and load the secret from a
+  password manager / system keychain. A literal key in `~/.bashrc`
+  is a literal key on every backup of your home directory.
+- **The shared task queue is local to the bridge process.** Tasks,
+  clarifications, and reviewer notes live in the bridge's in-memory
+  state. Don't aim two unrelated projects at the same bridge
+  instance — the queue is single-tenant by design.
+
+For team use: each pair of architect+executor terminals should run
+its own bridge process, not share one. The MCP transport is stdio
+on the local machine; nothing listens on a network port.
+
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 

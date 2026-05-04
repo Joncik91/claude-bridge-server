@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="claude-bridge-server">
+  <title>claude-bridge-server</title>
+
+  <rect width="400" height="400" rx="48" fill="#0E0E0F"/>
+
+  <line x1="122" y1="205" x2="278" y2="205"
+        stroke="#E8954A" stroke-width="4"
+        stroke-linecap="square"/>
+
+  <circle cx="96" cy="205" r="26"
+          fill="none" stroke="#E8954A" stroke-width="8"/>
+
+  <circle cx="304" cy="205" r="26" fill="#E8954A"/>
+
+  <path d="M 200 189.5 L 215.5 205 L 200 220.5 L 184.5 205 Z"
+        fill="#E8954A"/>
+</svg>
