@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/logo.svg" alt="Claude Bridge" width="160" height="160">
+<img src="docs/logo.png" alt="Claude Bridge" width="160" height="160">
 
 # Claude Bridge
 
